@@ -22,7 +22,7 @@ class MyProsody:
 
         returns : objects outputed by the praat script
         """
-        sound=p+"/"+"dataset"+"/"+"audioFiles"+"/"+m+".wav"
+        sound=m
         
 
         assert os.path.isfile(sound), "Wrong path to audio file"
@@ -30,7 +30,7 @@ class MyProsody:
         assert os.path.isdir(self.path), "Wrong path to audio files"
 
         try:
-            objects= run_file(self.sourcerun, -20, 2, 0.3, "yes",sound,path, 80, 400, 0.01, capture_output=True)
+            objects= run_file(self.sourcerun, -20, 2, 0.3, "yes",sound,self.path, 80, 400, 0.01, capture_output=True)
             print (objects[0]) # This will print the info from the sound object, and objects[0] is a parselmouth.Sound object
             z1=str( objects[1]) # This will print the info from the textgrid object, and objects[1] is a parselmouth.Data object with a TextGrid inside
             z2=z1.strip().split()
@@ -199,11 +199,9 @@ class MyProsody:
         Pronunciation posteriori probability score percentage
         """
 
-        sound=p+"/"+"dataset"+"/"+"audioFiles"+"/"+m+".wav"
-        sourcerun=p+"/"+"dataset"+"/"+"essen"+"/"+"myspsolution.praat"
-        path=p+"/"+"dataset"+"/"+"audioFiles"+"/"
+        sound=m
         try:
-            objects= run_file(sourcerun, -20, 2, 0.3, "yes",sound,path, 80, 400, 0.01, capture_output=True)
+            objects= run_file(self.sourcerun, -20, 2, 0.3, "yes",sound,self.path, 80, 400, 0.01, capture_output=True)
             print (objects[0]) # This will print the info from the sound object, and objects[0] is a parselmouth.Sound object
             z1=str( objects[1]) # This will print the info from the textgrid object, and objects[1] is a parselmouth.Data object with a TextGrid inside
             z2=z1.strip().split()
@@ -221,11 +219,9 @@ class MyProsody:
         """
         Gender recognition and mood of speech
         """
-        sound=p+"/"+"dataset"+"/"+"audioFiles"+"/"+m+".wav"
-        sourcerun=p+"/"+"dataset"+"/"+"essen"+"/"+"myspsolution.praat" 
-        path=p+"/"+"dataset"+"/"+"audioFiles"+"/"
+        sound=m
         try:
-            objects= run_file(sourcerun, -20, 2, 0.3, "yes",sound,path, 80, 400, 0.01, capture_output=True)
+            objects= run_file(self.sourcerun, -20, 2, 0.3, "yes",sound,self.path, 80, 400, 0.01, capture_output=True)
             print (objects[0]) # This will print the info from the sound object, and objects[0] is a parselmouth.Sound object
             z1=str( objects[1]) # This will print the info from the textgrid object, and objects[1] is a parselmouth.Data object with a TextGrid inside
             z2=z1.strip().split()
@@ -292,14 +288,14 @@ class MyProsody:
         """
         Compared to native speech, here are the prosodic features of your speech
         """
-        sound=p+"/"+"dataset"+"/"+"audioFiles"+"/"+m+".wav"
-        sourcerun=p+"/"+"dataset"+"/"+"essen"+"/"+"MLTRNL.praat"
-        path=p+"/"+"dataset"+"/"+"audioFiles"+"/"
-        outo=p+"/"+"dataset"+"/"+"datanewchi22.csv"
-        outst=p+"/"+"dataset"+"/"+"datanewchi44.csv"
-        outsy=p+"/"+"dataset"+"/"+"datanewchi33.csv"
-        pa2=p+"/"+"dataset"+"/"+"stats.csv"
-        pa7=p+"/"+"dataset"+"/"+"datanewchi44.csv" 
+        sound=m
+        sourcerun=self.p+"/"+"dataset"+"/"+"essen"+"/"+"MLTRNL.praat"
+        path=self.p+"/"+"dataset"+"/"+"audioFiles"+"/"
+        outo=self.p+"/"+"dataset"+"/"+"datanewchi22.csv"
+        outst=self.p+"/"+"dataset"+"/"+"datanewchi44.csv"
+        outsy=self.p+"/"+"dataset"+"/"+"datanewchi33.csv"
+        pa2=self.p+"/"+"dataset"+"/"+"stats.csv"
+        pa7=self.p+"/"+"dataset"+"/"+"datanewchi44.csv" 
         result_array = np.empty((0, 100))
         files = glob.glob(path)
         result_array = np.empty((0, 27))
@@ -347,5 +343,110 @@ class MyProsody:
                 else:
                     dfout = "%s:\t (%s)" % (nsns[i],":Out of Range")
                     print(dfout)
+        except:
+            print ("Try again the sound of the audio was not clear")
+
+    def mysplev(self,m):
+        """
+        Spoken Language Proficiency Level estimator, 
+        based on Machine Learning models of the prosodic features of your speech
+        """
+        import sys
+        # def my_except_hook(exctype, value, traceback):
+        #     print('There has been an error in the system')
+        # sys.excepthook = my_except_hook
+        import warnings
+        if not sys.warnoptions:
+            warnings.simplefilter("ignore")
+        sound=m
+        sourcerun=self.p+"/"+"dataset"+"/"+"essen"+"/"+"MLTRNL.praat"
+        path=self.p+"/"+"dataset"+"/"+"audioFiles"+"/"
+        pa1=self.p+"/"+"dataset"+"/"+"datanewchi23.csv"
+        pa7=self.p+"/"+"dataset"+"/"+"datanewchi45.csv"
+        pa5=self.p+"/"+"dataset"+"/"+"datanewchi34.csv"
+        result_array = np.empty((0, 100))
+        ph = sound
+        files = glob.glob(ph)
+        result_array = np.empty((0, 27))
+        try:
+            for soundi in files:
+                objects= run_file(sourcerun, -20, 2, 0.3, "yes", soundi, path, 80, 400, 0.01, capture_output=True)
+                #print (objects[0]) # This will print the info from the sound object, and objects[0] is a parselmouth.Sound object
+                z1=( objects[1]) # This will print the info from the textgrid object, and objects[1] is a parselmouth.Data object with a TextGrid inside
+                z3=z1.strip().split()
+                z2=np.array([z3])
+                result_array=np.append(result_array,[z3], axis=0)
+                
+            np.savetxt(pa1,result_array, fmt='%s',delimiter=',')
+            #Data and features analysis 
+            df = pd.read_csv(pa1, names = ['avepauseduratin','avelongpause','speakingtot','avenumberofwords','articulationrate','inpro','f1norm','mr','q25',
+                                          'q50','q75','std','fmax','fmin','vowelinx1','vowelinx2','formantmean','formantstd','nuofwrds','npause','ins',
+                                          'fillerratio','xx','xxx','totsco','xxban','speakingrate'],na_values='?')
+
+            scoreMLdataset=df.drop(['xxx','xxban'], axis=1)
+            scoreMLdataset.to_csv(pa7, header=False,index = False)
+            newMLdataset=df.drop(['avenumberofwords','f1norm','inpro','q25','q75','vowelinx1','nuofwrds','npause','xx','totsco','xxban','speakingrate','fillerratio'], axis=1)
+            newMLdataset.to_csv(pa5, header=False,index = False)
+            namess=nms = ['avepauseduratin','avelongpause','speakingtot','articulationrate','mr',
+                                          'q50','std','fmax','fmin','vowelinx2','formantmean','formantstd','ins',
+                                          'xxx']
+            df1 = pd.read_csv(pa5,
+                                    names = namess)
+            df33=df1.drop(['xxx'], axis=1)
+            array = df33.values
+            array=np.log(array)
+            x = array[:,0:13]
+
+            def myspp(bp,bg):
+              sound=bg+"/"+"dataset"+"/"+"audioFiles"+"/"+bp+".wav"
+              sourcerun=bg+"/"+"dataset"+"/"+"essen"+"/"+"myspsolution.praat"
+              path=bg+"/"+"dataset"+"/"+"audioFiles"+"/"
+              objects= run_file(sourcerun, -20, 2, 0.3, "yes",sound,path, 80, 400, 0.01, capture_output=True)
+              print (objects[0]) # This will print the info from the sound object, and objects[0] is a parselmouth.Sound object
+              z1=str( objects[1]) # This will print the info from the textgrid object, and objects[1] is a parselmouth.Data object with a TextGrid inside
+              z2=z1.strip().split()
+              z3=int(z2[13]) # will be the integer number 10
+              z4=float(z2[14]) # will be the floating point number 8.3
+              db= binom.rvs(n=10,p=z4,size=10000)
+              a=np.array(db)
+              b=np.mean(a)*100/10
+              return b
+            
+            bp=m
+            bg=p
+            bi=myspp(bp,bg)
+            if bi<85:
+                input("Try again, unnatural-sounding speech detected. No further result. Press any key to exit.")
+                exit()
+            
+            filename=p+"/"+"dataset"+"/"+"essen"+"/"+"CART_model.sav"
+            model = pickle.load(open(filename, 'rb'))
+            predictions = model.predict(x)
+            print("58% accuracy    ",predictions)
+
+            filename=p+"/"+"dataset"+"/"+"essen"+"/"+"KNN_model.sav"
+            model = pickle.load(open(filename, 'rb'))
+            predictions = model.predict(x)
+            print("65% accuracy    ",predictions)
+
+            filename=p+"/"+"dataset"+"/"+"essen"+"/"+"LDA_model.sav"
+            model = pickle.load(open(filename, 'rb'))
+            predictions = model.predict(x)
+            print("70% accuracy    ",predictions)
+
+            filename=p+"/"+"dataset"+"/"+"essen"+"/"+"LR_model.sav"
+            model = pickle.load(open(filename, 'rb'))
+            predictions = model.predict(x)
+            print("67% accuracy    ",predictions)
+
+            filename=p+"/"+"dataset"+"/"+"essen"+"/"+"NB_model.sav"
+            model = pickle.load(open(filename, 'rb'))
+            predictions = model.predict(x)
+            print("64% accuracy    ",predictions)
+
+            filename=p+"/"+"dataset"+"/"+"essen"+"/"+"SVN_model.sav"
+            model = pickle.load(open(filename, 'rb'))
+            predictions = model.predict(x)
+            print("63% accuracy    ",predictions)
         except:
             print ("Try again the sound of the audio was not clear")

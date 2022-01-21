@@ -194,6 +194,22 @@ class MyProsody:
         print (dataset.T)
         return dataset.T
 
+    def myspass(self,m):
+        """
+        Overview
+        """
+        z2 = self.run_praat_file(m)
+        z3=np.array(z2)
+        z4=np.array(z3)[np.newaxis]
+        z5=z4.T
+        dataset={"number_ of_syllables":z5[0,:],"number_of_pauses":z5[1,:],"rate_of_speech":z5[2,:],"articulation_rate":z5[3,:],"speaking_duration":z5[4,:],
+                            "original_duration":z5[5,:],"balance":z5[6,:],"f0_mean":z5[7,:],"f0_std":z5[8,:],"f0_median":z5[9,:],"f0_min":z5[10,:],"f0_max":z5[11,:],
+                            "f0_quantile25":z5[12,:],"f0_quan75":z5[13,:]}
+        gen,score=myspgend(m)
+        dataset['gender']=gen
+        dataset['excitement']=score
+        return dataset
+        
     def mysppron(self,m):
         """
         Pronunciation posteriori probability score percentage
@@ -269,16 +285,22 @@ class MyProsody:
                 mmm=0.35
             if z4>97 and z4<=114:
                 print("a Male, mood of speech: Showing no emotion, normal, p-value/sample size= :%.2f" % (mmm), (nnn))
+                return 0,0.0
             elif z4>114 and z4<=135:
                 print("a Male, mood of speech: Reading, p-value/sample size= :%.2f" % (mmm), (nnn))
+                return 0,0.5
             elif z4>135 and z4<=163:
                 print("a Male, mood of speech: speaking passionately, p-value/sample size= :%.2f" % (mmm), (nnn))
+                return 0,1.0
             elif z4>163 and z4<=197:
                 print("a female, mood of speech: Showing no emotion, normal, p-value/sample size= :%.2f" % (mmm), (nnn))
+                return 1,0.0
             elif z4>197 and z4<=226:
                 print("a female, mood of speech: Reading, p-value/sample size= :%.2f" % (mmm), (nnn))
+                return 1,0.5
             elif z4>226 and z4<=245:
                 print("a female, mood of speech: speaking passionately, p-value/sample size= :%.2f" % (mmm), (nnn))
+                return 1,1.0
             else:
                 print("Voice not recognized")
         except:

@@ -202,14 +202,14 @@ class MyProsody:
         z3=np.array(z2)
         z4=np.array(z3)[np.newaxis]
         z5=z4.T
-        dataset={"number_ of_syllables":z5[0,:],"number_of_pauses":z5[1,:],"rate_of_speech":z5[2,:],"articulation_rate":z5[3,:],"speaking_duration":z5[4,:],
-                            "original_duration":z5[5,:],"balance":z5[6,:],"f0_mean":z5[7,:],"f0_std":z5[8,:],"f0_median":z5[9,:],"f0_min":z5[10,:],"f0_max":z5[11,:],
-                            "f0_quantile25":z5[12,:],"f0_quan75":z5[13,:]}
-        gen,score=myspgend(m)
+        dataset={"number_ of_syllables":z5[0][0],"number_of_pauses":z5[1][0],"rate_of_speech":z5[2][0],"articulation_rate":z5[3][0],"speaking_duration":z5[4][0],
+                            "original_duration":z5[5][0],"balance":z5[6][0],"f0_mean":z5[7][0],"f0_std":z5[8][0],"f0_median":z5[9][0],"f0_min":z5[10][0],"f0_max":z5[11][0],
+                            "f0_quantile25":z5[12][0],"f0_quan75":z5[13][0]}
+        gen,score=self.myspgend(m)
         dataset['gender']=gen
         dataset['excitement']=score
         return dataset
-        
+
     def mysppron(self,m):
         """
         Pronunciation posteriori probability score percentage
